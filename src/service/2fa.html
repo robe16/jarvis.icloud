@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h2>Jarvis: iCloud</h2>
+                    <h3>2FA code validation</h3>
+                </div>
+            </div>
+            <br>
+            <!-- div class="row">
+                <div class="col-xs-12">
+                    <p>Currently configuring for <b>{accountid}</b></p>
+                </div>
+            </div -->
+            <br>
+            <div class="row">
+                <div class="col-xs-12">
+                    This page is to be used to complete 2FA (Two Factor Authentication) to approve the 'Jarvis: iCloud' service access to iCloud services.
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-xs-12">
+                    <b>Step 1: Request for the validation code to be sent to default device as per config.json</b>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-xs-12 col-sm-9 col-md-6 col-md-offset-3">
+                    <button id="requestCode" type="button" class="btn btn-default" style="width: 100%;" onclick="requestCode();">Request validation code</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-9 col-md-6 col-md-offset-3">
+                    <div id="alert_request" class="alert" role="alert" style="margin-top: 1em; padding: 0.5em; visibility: hidden;">-</div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-xs-12">
+                    <b>Step 2: Submit the code to complete 2SA process</b>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-xs-5 col-sm-3 col-md-2 col-md-offset-3">
+                    <p style="padding-top: 0.5em;">Enter validation code:</p>
+                </div>
+                <div class="col-xs-5 col-sm-3 col-md-2">
+                    <input id="codeInput" type="text" class="form-control" placeholder="code" aria-describedby="basic-addon1">
+                </div>
+                <div class="col-xs-2 col-sm-3 col-md-2">
+                    <button type="button" class="btn btn-default" style="width: 100%;" onclick="validateCode();">Submit</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-9 col-md-6 col-md-offset-3">
+                    <div id="alert_validate" class="alert" role="alert" style="margin-top: 1em; padding: 0.5em; visibility: hidden;">-</div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <footer>
+        <script src="/icloud/2fa/2fa.js"></script>
+    </footer>
+</html>

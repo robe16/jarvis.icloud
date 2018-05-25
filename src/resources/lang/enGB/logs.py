@@ -1,0 +1,16 @@
+logDescStartingService = 'Starting micro service'
+logDescPortListener = 'Port listener - {port}'
+logDescDeviceObjectCreation = 'Device object creation'
+
+logDesc_services_Broadcast = 'Broadcast of services'
+logDesc_Broadcast = 'Broadcasting message'
+
+logDesc_icloud_uri_devices = 'devices'
+logDesc_icloud_uri_device_location = 'device_location'
+logDesc_icloud_uri_device_status = 'device_status'
+logDesc_icloud_uri_device_playsound = 'device_playsound'
+logDesc_icloud_uri_device_lostmode = 'device_lostmode'
+logDesc_icloud_uri_events = 'events'
+logDesc_icloud_uri_contacts = 'contacts'
+logDesc_icloud_uri_files = 'files'
+logDesc_icloud_uri_photos = 'photos'

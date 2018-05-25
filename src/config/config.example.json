@@ -1,0 +1,21 @@
+{
+    "service_id": "icloud",
+    "name_long": "iCloud",
+    "name_short": "iCloud",
+    "groups": [
+        "Information"
+    ],
+    "subservices": [],
+    "details": {
+        "username": "name@email.co.uk",
+        "password": "P@$$w0rd",
+        "2fa_default": {
+            "deviceType": "SMS",
+            "phoneNumber": "********01"
+        }
+    },
+    "port": {
+        "broadcast": 1040,
+        "listener": [1071, 1072, 1073, 1074]
+    }
+}
