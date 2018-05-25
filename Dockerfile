@@ -5,10 +5,10 @@ MAINTAINER robe16
 RUN apt-get update \
     && apt-get install -y python3 python3-pip
 
-WORKDIR /jarvis/news
+WORKDIR /jarvis/icloud
 
 # Bundle app source
-COPY src /jarvis/news
+COPY src /jarvis/icloud
 
 # Copy app dependencies
 COPY requirements.txt requirements.txt

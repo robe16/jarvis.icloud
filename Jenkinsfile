@@ -1,7 +1,7 @@
 echo "Running Build ID: ${env.BUILD_ID}"
 
-string githubUrl = "https://github.com/robe16/jarvis.news.git"
-string serviceType = "news"
+string githubUrl = "https://github.com/robe16/jarvis.icloud.git"
+string serviceType = "icloud"
 String build_args
 String deployLogin
 String docker_img_name
