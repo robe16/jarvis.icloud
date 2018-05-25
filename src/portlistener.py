@@ -14,7 +14,7 @@ from resources.global_resources.exposed_apis import *
 from resources.global_resources.log_vars import logPass, logFail, logException
 from resources.global_resources.variables import *
 from resources.lang.enGB.logs import *
-from service._icloud import ICloud
+from service.icloud import ICloud
 
 
 def start_bottle(port_threads):
