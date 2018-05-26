@@ -47,12 +47,17 @@ class ICloud():
 
     def _get_2fa_trusted_device_default(self):
         devices = self.get_2fa_trusted_devices()
-        for d in devices['devices']:
-            default_deviceType = get_cfg_details_account_2fa_deviceType()
-            if d['deviceType'] == default_deviceType:
-                if default_deviceType == 'SMS':
-                    return d
-        return False
+        if devices['2fa']:
+            for d in devices['devices']:
+                default_deviceType = get_cfg_details_account_2fa_deviceType()
+                if d['deviceType'] == default_deviceType:
+                    if default_deviceType == 'SMS':
+                        return {'device': d}
+            # if no default device found in list
+            return {'device': False,
+                    'error': 'Jarvis does not hold a defulat device that matches any returned by iCloud.'}
+        return {'device': False,
+                'error': 'iCloud has reported back that 2FA is not required for access to services.'}
 
     # note that 'device' must be in the correct dict structure
     def request_validation_code(self, device):
@@ -65,10 +70,11 @@ class ICloud():
         #
         device = self._get_2fa_trusted_device_default()
         #
-        if device:
-            return self.request_validation_code(device)
+        if device['device']:
+            return {'result': self.request_validation_code(device)}
         else:
-            return False
+            return {'result': False,
+                    'error': device['error']}
 
     # note that 'device' must be in the correct dict structure
     def validate_validation_code(self, device, code):

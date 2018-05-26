@@ -1,10 +1,19 @@
+var httpStatusSuccess = 200
+var httpStatusBadrequest = 400
+var httpStatusForbidden = 404
+var httpStatusFailure = 420
+var httpStatusServererror = 500
+
 function requestCode() {
     httpGetAsync("/icloud/2fa/code/request", "POST", null, requestCode_callback);
 }
-function requestCode_callback(result) {
-    if (result) {
+function requestCode_callback(result, response={}) {
+    if (result==httpStatusSuccess) {
         document.getElementById("alert_request").className = "alert alert-success";
         document.getElementById("alert_request").innerHTML = "Code requested";
+    } else if (result==httpStatusFailure) {
+        document.getElementById("alert_request").className = "alert alert-warning";
+        document.getElementById("alert_request").innerHTML = response.error;
     } else {
         document.getElementById("alert_request").className = "alert alert-danger";
         document.getElementById("alert_request").innerHTML = "An error has occurred, please try again.";
@@ -16,8 +25,8 @@ function validateCode() {
     var code = document.getElementById("codeInput").value;
     httpGetAsync("/icloud/2fa/code/validate", "POST", {'2fa_code': code}, validateCode_callback);
 }
-function validateCode_callback(result) {
-    if (result) {
+function validateCode_callback(result, response={}) {
+    if (httpStatusSuccess) {
         document.getElementById("alert_validate").className = "alert alert-success";
         document.getElementById("alert_validate").innerHTML = "Code validation successful";
     } else {
@@ -35,9 +44,16 @@ function httpGetAsync(theUri, method, body, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4) {
-            if (xmlHttp.status == 200) {
-                callback(true);
-            } else {
+            if (xmlHttp.status == httpStatusSuccess) {
+                // operation success
+                callback(httpStatusSuccess);
+            } else if (xmlHttp.status == httpStatusFailure) {
+                // operation failure
+                callback(httpStatusFailure, JSON.parse(xmlHttp.responseText));
+            } else if (xmlHttp.status == httpStatusBadrequest ||
+                        xmlHttp.status == httpStatusForbidden ||
+                        xmlHttp.status == httpStatusServererror) {
+                // failures such as forbidden, server error, etc.
                 callback(false);
             }
          }

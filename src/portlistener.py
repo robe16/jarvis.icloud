@@ -193,12 +193,12 @@ def start_bottle(port_threads):
         try:
             r = _icloud.request_validation_code_default()
             #
-            if not bool(r):
-                status = httpStatusFailure
-                args['result'] = logFail
-            else:
+            if r['result']:
                 status = httpStatusSuccess
                 args['result'] = logPass
+            else:
+                status = httpStatusFailure
+                args['result'] = logFail
             #
             args['http_response_code'] = status
             args['description'] = '-'
@@ -206,6 +206,7 @@ def start_bottle(port_threads):
             #
             response = HTTPResponse()
             response.status = status
+            response.body = r
             enable_cors(response)
             #
             return response
