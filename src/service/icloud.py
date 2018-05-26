@@ -55,7 +55,7 @@ class ICloud():
                         return {'device': d}
             # if no default device found in list
             return {'device': False,
-                    'error': 'Jarvis does not hold a defulat device that matches any returned by iCloud.'}
+                    'error': 'Jarvis does not hold a default devices that matches those returned by iCloud.'}
         return {'device': False,
                 'error': 'iCloud has reported back that 2FA is not required for access to services.'}
 
@@ -71,7 +71,7 @@ class ICloud():
         device = self._get_2fa_trusted_device_default()
         #
         if device['device']:
-            return {'result': self.request_validation_code(device)}
+            return {'result': self.request_validation_code(device['device'])}
         else:
             return {'result': False,
                     'error': device['error']}
