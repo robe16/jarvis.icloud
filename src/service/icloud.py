@@ -177,12 +177,12 @@ class ICloud():
             if from_m < to_m:
                 if (bday_m == from_m and bday_d >= from_d) or \
                         (bday_m == to_m and bday_d <= to_d) or \
-                        (from_m <= bday_m <= to_m):
+                        (from_m <= bday_m <= to_m and from_d <= bday_d <= to_d):
                     new_bdays.append(b)
             elif from_m > to_m:
                 if (bday_m == from_m and bday_d <= from_d) or \
                         (bday_m == to_m and bday_d >= to_d) or \
-                        (to_m <= bday_m <= from_m):
+                        (to_m <= bday_m <= from_m and from_d <= bday_d <= to_d):
                     new_bdays.append(b)
             else:
                 if from_m == bday_m and from_d <= bday_d <= to_d:
