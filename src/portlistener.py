@@ -273,16 +273,16 @@ def start_bottle(port_threads):
     ################################################################################################
 
     @get(uri_get_calendar_all)
-    def get_events_all(option):
+    def get_calendar_all(option):
         #
         args = _get_log_args(request)
         #
         try:
             #
-            if option == 'events':
-                data = {'events': _icloud.get_events()}
-            elif option == 'birthdays':
-                data = {'birthdays': _icloud.get_birthdays()}
+            if option == str_calendar_events:
+                data = {str_calendar_events: _icloud.get_events()}
+            elif option == str_calendar_birthdays:
+                data = {str_calendar_birthdays: _icloud.get_birthdays()}
             else:
                 data = False
             #
@@ -319,16 +319,16 @@ def start_bottle(port_threads):
             raise HTTPError(status)
 
     @get(uri_get_calendar_today)
-    def get_events_today(option):
+    def get_calendar_today(option):
         #
         args = _get_log_args(request)
         #
         try:
             #
-            if option == 'events':
-                data = {'events': _icloud.get_events_today()}
-            elif option == 'birthdays':
-                data = {'birthdays': _icloud.get_birthdays_today()}
+            if option == str_calendar_events:
+                data = {str_calendar_events: _icloud.get_events_today()}
+            elif option == str_calendar_birthdays:
+                data = {str_calendar_birthdays: _icloud.get_birthdays_today()}
             else:
                 data = False
             #
@@ -365,16 +365,16 @@ def start_bottle(port_threads):
             raise HTTPError(status)
 
     @get(uri_get_calendar_tomorrow)
-    def get_events_tomorrow(option):
+    def get_calendar_tomorrow(option):
         #
         args = _get_log_args(request)
         #
         try:
             #
-            if option == 'events':
-                data = {'events': _icloud.get_events_tomorrow()}
-            elif option == 'birthdays':
-                data = {'birthdays': _icloud.get_birthdays_tomorrow()}
+            if option == str_calendar_events:
+                data = {str_calendar_events: _icloud.get_events_tomorrow()}
+            elif option == str_calendar_birthdays:
+                data = {str_calendar_birthdays: _icloud.get_birthdays_tomorrow()}
             else:
                 data = False
             #
@@ -411,7 +411,7 @@ def start_bottle(port_threads):
             raise HTTPError(status)
 
     @get(uri_get_calendar_date)
-    def get_events_date(option, dateSpecific):
+    def get_calendar_date(option, dateSpecific):
         #
         args = _get_log_args(request)
         #
@@ -419,10 +419,10 @@ def start_bottle(port_threads):
             # '_date' should be in format "yyyy-mm-dd"
             _date = datetime.strptime(dateSpecific, '%Y-%m-%d')
             #
-            if option == 'events':
-                data = {'events': _icloud.get_events_date(_date)}
-            elif option == 'birthdays':
-                data = {'birthdays': _icloud.get_birthdays_date(_date)}
+            if option == str_calendar_events:
+                data = {str_calendar_events: _icloud.get_events_date(_date)}
+            elif option == str_calendar_birthdays:
+                data = {str_calendar_birthdays: _icloud.get_birthdays_date(_date)}
             else:
                 data = False
             #
@@ -459,7 +459,7 @@ def start_bottle(port_threads):
             raise HTTPError(status)
 
     @get(uri_get_calendar_range)
-    def get_events_date(option, dateFrom, dateTo):
+    def get_calendar_daterange(option, dateFrom, dateTo):
         #
         args = _get_log_args(request)
         #
@@ -468,10 +468,10 @@ def start_bottle(port_threads):
             _dateFrom = datetime.strptime(dateFrom, '%Y-%m-%d')
             _dateTo = datetime.strptime(dateTo, '%Y-%m-%d')
             #
-            if option == 'events':
-                data = {'events': _icloud.get_events_daterange(_dateFrom, _dateTo)}
-            elif option == 'birthdays':
-                data = {'birthdays': _icloud.get_birthdays_daterange(_dateFrom, _dateTo)}
+            if option == str_calendar_events:
+                data = {str_calendar_events: _icloud.get_events_daterange(_dateFrom, _dateTo)}
+            elif option == str_calendar_birthdays:
+                data = {str_calendar_birthdays: _icloud.get_birthdays_daterange(_dateFrom, _dateTo)}
             else:
                 data = False
             #

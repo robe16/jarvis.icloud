@@ -15,7 +15,7 @@ uri_get_calendar_all = '/icloud/<option>/all'
 uri_get_calendar_today = '/icloud/<option>/today'
 uri_get_calendar_tomorrow = '/icloud/<option>/tomorrow'
 uri_get_calendar_date = '/icloud/<option>/date/<dateSpecific>'
-uri_get_calendar_range = '/icloud/<option>/range/<dateFrom>/<dateTo>'
+uri_get_calendar_range = '/icloud/<option>/daterange/datefrom/<dateFrom>/dateto/<dateTo>'
 
 str_calendar_events = 'events'
 str_calendar_birthdays = 'birthdays'
