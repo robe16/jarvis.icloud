@@ -198,7 +198,7 @@ class ICloud():
 
     def _convert_icloud_event(self, _event):
         return {'title': _event['title'],
-                'location': _event['title'],
+                'location': _event['location'],
                 'start': self._convert_datetime_to_string(self._convert_icloud_to_datetime(_event['localStartDate'])),
                 'end': self._convert_datetime_to_string(self._convert_icloud_to_datetime(_event['localEndDate'])),
                 'duration': _event['duration'],
