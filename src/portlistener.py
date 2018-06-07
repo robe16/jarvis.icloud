@@ -120,7 +120,7 @@ def start_bottle(port_threads):
         args = _get_log_args(request)
         #
         try:
-            with open(os.path.join(os.path.dirname(__file__), 'service/2fa.html'), 'r') as f:
+            with open(os.path.join(os.path.dirname(__file__), 'service/2fa/2fa.html'), 'r') as f:
                 page_body = f.read()
             #
             status = httpStatusSuccess
@@ -163,7 +163,7 @@ def start_bottle(port_threads):
             args['description'] = '-'
             log_inbound(**args)
             #
-            response = static_file('2fa.js', root='service')
+            response = static_file('2fa.js', root='service/2fa')
             response.status = status
             enable_cors(response)
             #
