@@ -2,9 +2,9 @@ from pyicloud import PyiCloudService
 from datetime import datetime, date, timedelta
 from time import time
 
-from config.config import get_cfg_details_accounts
 from config.config import get_cfg_details_account_username, get_cfg_details_account_password
-from config.config import get_cfg_details_account_2fa_deviceType, get_cfg_details_account_2fa_phoneNumber
+from config.config import get_cfg_details_2fa_deviceType, get_cfg_details_2fa_phoneNumber
+from config.config import get_cfg_details_calendar_name, get_cfg_details_calendar_colour
 from log.log import log_outbound, log_internal
 from resources.global_resources.log_vars import logPass, logFail, logException
 from resources.lang.enGB.logs import *
@@ -25,9 +25,9 @@ class ICloud():
         return {'2fa': False}
         # r = self._icloud.requires_2sa
         # if r:
-        #     return {'2fa': True}
+        #     return {'2fs': True}
         # else:
-        #     return {'2fa': False}
+        #     return {'2sa': False}
 
     def check2fa(self):
         r = self._icloud.requires_2fa
@@ -49,7 +49,7 @@ class ICloud():
         devices = self.get_2fa_trusted_devices()
         if devices['2fa']:
             for d in devices['devices']:
-                default_deviceType = get_cfg_details_account_2fa_deviceType()
+                default_deviceType = get_cfg_details_2fa_deviceType()
                 if d['deviceType'] == default_deviceType:
                     if default_deviceType == 'SMS':
                         return {'device': d}
@@ -126,7 +126,9 @@ class ICloud():
         return self._get_events(dateFrom, dateTo)
 
     def _get_events(self, from_dt, to_dt):
-        return self._convert_icloud_events(self._icloud.calendar.events(from_dt, to_dt))
+        _events = self._icloud.calendar.events(from_dt, to_dt)
+        _events = self._convert_icloud_events(_events)
+        return _events
 
     # Calendar - birthdays
 
@@ -190,19 +192,64 @@ class ICloud():
         #
         return new_bdays
 
+    @staticmethod
+    def _get_calendar_details(_event):
+        #
+        calendar_name = get_cfg_details_calendar_name(_event['pGuid'])
+        if not calendar_name:
+            calendar_name = ''
+        #
+        calendar_colour = get_cfg_details_calendar_colour(_event['pGuid'])
+        if not calendar_colour:
+            calendar_colour = 'none'
+        #
+        return {'name': calendar_name,
+                'colour': calendar_colour}
+
+    # guid = event id that is used in same event even across invitees
+    # pGuid = calendar id unique to specific calendar and user
+
     def _convert_icloud_events(self, _events):
+        #
+        tempGuids = {}
+        for event in _events:
+            if event['guid'] in tempGuids.keys():
+                tempGuids[event['guid']].append(self._get_calendar_details(event))
+            else:
+                tempGuids[event['guid']] = [self._get_calendar_details(event)]
+        #
         new_events = []
         for event in _events:
-            new_events.append(self._convert_icloud_event(event))
+            # put event in structure for json
+            new_e = self._convert_icloud_event(event)
+            # find all calendars for this event and add to new_e
+            if event['guid'] in tempGuids.keys():
+                new_e['calendars'] = tempGuids[event['guid']]
+            #
+            new_events.append(new_e)
+        #
         return new_events
 
     def _convert_icloud_event(self, _event):
+        #
         return {'title': _event['title'],
                 'location': _event['location'],
                 'start': self._convert_datetime_to_string(self._convert_icloud_to_datetime(_event['localStartDate'])),
                 'end': self._convert_datetime_to_string(self._convert_icloud_to_datetime(_event['localEndDate'])),
                 'duration': _event['duration'],
-                'allDay': _event['allDay']}
+                'allDay': _event['allDay'],
+                'calendars': []
+                }
+
+    # Following function will get events for the next 52 weeks and identify all unique calendars
+    def get_icloud_calendars(self):
+        events = self._icloud.calendar.events(date.today(), date.today() + timedelta(weeks=52))
+        tempGuids = {}
+        for event in events:
+            if not event['pGuid'] in tempGuids.keys():
+                tempGuids[event['pGuid']] = self._get_calendar_details(event)
+        return tempGuids
+
 
     @staticmethod
     def _convert_icloud_to_datetime(_icloud_datetime):

@@ -12,6 +12,16 @@
         "2fa_default": {
             "deviceType": "SMS",
             "phoneNumber": "********01"
+        },
+        "calendars": {
+            "id1": {
+                "name": "Personal",
+                "colour": "yellow"
+            },
+            "id2": {
+                "name": "Work",
+                "colour": "green"
+            }
         }
     },
     "port": {

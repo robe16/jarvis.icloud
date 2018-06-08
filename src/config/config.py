@@ -83,10 +83,6 @@ def get_cfg_port_listener():
     return get_config_json()['port']['listener']
 
 
-def get_cfg_details_accounts():
-    return get_cfg_details().keys()
-
-
 def get_cfg_details_account_username():
     return get_cfg_details()['username']
 
@@ -95,13 +91,48 @@ def get_cfg_details_account_password():
     return get_cfg_details()['password']
 
 
-def get_cfg_details_account_2fa():
+def get_cfg_details_2fa():
     return get_cfg_details()['2fa_default']
 
 
-def get_cfg_details_account_2fa_deviceType():
-    return get_cfg_details_account_2fa()['deviceType']
+def get_cfg_details_2fa_deviceType():
+    return get_cfg_details_2fa()['deviceType']
 
 
-def get_cfg_details_account_2fa_phoneNumber():
-    return get_cfg_details_account_2fa()['phoneNumber']
+def get_cfg_details_2fa_phoneNumber():
+    return get_cfg_details_2fa()['phoneNumber']
+
+
+def get_cfg_details_calendars():
+    return get_cfg_details()['calendars']
+
+
+def get_cfg_details_calendar(id):
+    items = get_cfg_details_calendars()
+    if id in items.keys():
+        return items[id]
+    else:
+        return False
+
+
+def get_cfg_details_calendar_name(id):
+    item = get_cfg_details_calendar(id)
+    if bool(item):
+        return item['name']
+    else:
+        return False
+
+
+def get_cfg_details_calendar_colour(id):
+    item = get_cfg_details_calendar(id)
+    if bool(item):
+        return item['colour']
+    else:
+        return False
+
+
+def set_cfg_details_calendar_info(id, name, colour):
+    config = get_config_json()
+    config['details']['calendars'][id] = {'name': name,
+                                          'colour': colour}
+    return write_config(config)
