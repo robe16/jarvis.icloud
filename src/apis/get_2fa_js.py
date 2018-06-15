@@ -1,3 +1,4 @@
+import os
 from bottle import HTTPResponse, static_file
 
 from common_functions.request_enable_cors import enable_cors
@@ -20,7 +21,8 @@ def get_2fa_js(request):
         args['description'] = '-'
         log_inbound(**args)
         #
-        response = static_file('2fa.js', root='service/2fa')
+        root = os.path.join(os.path.dirname(__file__), '..', 'service/2fa')
+        response = static_file('2fa.js', root=root)
         response.status = status
         enable_cors(response)
         #

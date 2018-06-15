@@ -13,7 +13,7 @@ def get_2fa_html(request):
     args = get_request_log_args(request)
     #
     try:
-        with open(os.path.join(os.path.dirname(__file__), 'service/2fa/2fa.html'), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'service/2fa/2fa.html'), 'r') as f:
             page_body = f.read()
         #
         status = httpStatusSuccess
