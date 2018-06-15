@@ -1,20 +1,24 @@
 import threading
-import os
-from datetime import datetime, date
 
-from bottle import HTTPError
 from bottle import get, post
-from bottle import request, run, HTTPResponse, static_file
+from bottle import request, run
 
-from common_functions.query_to_string import convert_query_to_string
 from config.config import get_cfg_port_listener
-from config.config import get_cfg_serviceid, get_cfg_name_long, get_cfg_name_short, get_cfg_groups, get_cfg_subservices
-from log.log import log_inbound, log_internal, log_outbound
-from resources.global_resources.exposed_apis import *
-from resources.global_resources.log_vars import logPass, logFail, logException
-from resources.global_resources.variables import *
+from log.log import log_internal
+from resources.global_resources.log_vars import logPass
 from resources.lang.enGB.logs import *
 from service.icloud import ICloud
+
+from apis.get_config import get_config
+from apis.get_2fa_html import get_2fa_html
+from apis.get_2fa_js import get_2fa_js
+from apis.post_2fa_code_request import post_2fa_code_request
+from apis.post_2fa_code_validate import post_2fa_code_validate
+from apis.get_calendar_all import get_calendar_all
+from apis.get_calendar_today import get_calendar_today
+from apis.get_calendar_tomorrow import get_calendar_tomorrow
+from apis.get_calendar_date import get_calendar_date
+from apis.get_calendar_daterange import get_calendar_daterange
 
 
 def start_bottle(port_threads):
@@ -28,484 +32,61 @@ def start_bottle(port_threads):
     log_internal(logPass, logDescDeviceObjectCreation, description='success')
 
     ################################################################################################
-    # Enable cross domain scripting
+    # APIs
     ################################################################################################
 
-    def enable_cors(response):
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        response.headers['Access-Control-Allow-Methods'] = 'GET'
-        response.headers['Access-Control-Allow-Headers'] = service_header_clientid_label
-        return response
+    @get('/config')
+    def api_get_config():
+        return get_config(request)
+
+    @get('/icloud/2fa')
+    def api_get_2fa_html():
+        return get_2fa_html(request)
+
+    @get('/icloud/2fa/2fa.js')
+    def api_get_2fa_js():
+        return get_2fa_js(request)
+
+    @post('/icloud/2fa/code/request')
+    def api_post_2fa_code_request():
+        return post_2fa_code_request(request, _icloud)
+
+    @post('/icloud/2fa/code/validate')
+    def api_post_2fa_code_validate():
+        post_2fa_code_validate(request, _icloud)
+
+    @get('/icloud/<option>/all')
+    def api_get_calendar_all(option):
+        return get_calendar_all(request, _icloud, option)
+
+    @get('/icloud/<option>/today')
+    def api_get_calendar_today(option):
+        return get_calendar_today(request, _icloud, option)
+
+    @get('/icloud/<option>/tomorrow')
+    def api_get_calendar_tomorrow(option):
+        return get_calendar_tomorrow(request, _icloud, option)
+
+    @get('/icloud/<option>/date/<dateSpecific>')
+    def api_get_calendar_date(option, dateSpecific):
+        return get_calendar_date(request, _icloud, option, dateSpecific)
+
+    @get('/icloud/<option>/daterange/datefrom/<dateFrom>/dateto/<dateTo>')
+    def api_get_calendar_daterange(option, dateFrom, dateTo):
+        return get_calendar_daterange(request, _icloud, option, dateFrom, dateTo)
+
 
     ################################################################################################
-    # Log arguments
+    # TODO - further API URIs
     ################################################################################################
-
-    def _get_log_args(request):
-        #
-        urlparts = request.urlparts
-        #
-        try:
-            client_ip = request.headers['X-Forwarded-For']
-        except:
-            client_ip = request['REMOTE_ADDR']
-        #
-        try:
-            server_ip = request.headers['X-Real-IP']
-        except:
-            server_ip = urlparts.hostname
-        #
-        try:
-            client_user = request.headers[service_header_clientid_label]
-        except:
-            client_user = request['REMOTE_ADDR']
-        #
-        server_request_query = convert_query_to_string(request.query) if request.query_string else '-'
-        server_request_body = request.body.read() if request.body.read()!='' else '-'
-        #
-        return {'client_ip': client_ip,
-                'client_user': client_user,
-                'server_ip': server_ip,
-                'server_thread_port': urlparts.port,
-                'server_method': request.method,
-                'server_request_uri': urlparts.path,
-                'server_request_query': server_request_query,
-                'server_request_body': server_request_body}
-
-    ################################################################################################
-    # Service info & Groups
-    ################################################################################################
-
-    @get(uri_config)
-    def get_config():
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            #
-            data = {'service_id': get_cfg_serviceid(),
-                    'name_long': get_cfg_name_long(),
-                    'name_short': get_cfg_name_short(),
-                    'subservices': get_cfg_subservices(),
-                    'groups': get_cfg_groups()}
-            #
-            status = httpStatusSuccess
-            #
-            args['result'] = logPass
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            return HTTPResponse(body=data, status=status)
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
-
-    ################################################################################################
-    # 2FA - html interface
-    ################################################################################################
-
-    @get(uri_get_2fa_code_request_html)
-    def get_2fa_html():
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            with open(os.path.join(os.path.dirname(__file__), 'service/2fa/2fa.html'), 'r') as f:
-                page_body = f.read()
-            #
-            status = httpStatusSuccess
-            args['result'] = logPass
-            #
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            response = HTTPResponse()
-            response.status = status
-            response.body = page_body
-            enable_cors(response)
-            #
-            return response
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
-
-    @get(uri_get_2fa_code_request_js)
-    def get_2fa_js():
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            #
-            status = httpStatusSuccess
-            args['result'] = logPass
-            #
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            response = static_file('2fa.js', root='service/2fa')
-            response.status = status
-            enable_cors(response)
-            #
-            return response
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
-
-    ################################################################################################
-    # 2FA - request code
-    ################################################################################################
-
-    @post(uri_post_2fa_code_request)
-    def post_code_request():
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            r = _icloud.request_validation_code_default()
-            #
-            if r['result']:
-                status = httpStatusSuccess
-                args['result'] = logPass
-            else:
-                status = httpStatusFailure
-                args['result'] = logFail
-            #
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            response = HTTPResponse()
-            response.status = status
-            response.body = r
-            enable_cors(response)
-            #
-            return response
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
-
-    ################################################################################################
-    # 2FA - validate code
-    ################################################################################################
-
-    @post(uri_post_2fa_code_validate)
-    def post_code_validation():
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            #
-            code = dict(request.json)
-            code = code['2fa_code']
-            #
-            r = _icloud.validate_validation_code_default(code)
-            #
-            if not bool(r):
-                status = httpStatusFailure
-                args['result'] = logFail
-            else:
-                status = httpStatusSuccess
-                args['result'] = logPass
-            #
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            response = HTTPResponse()
-            response.status = status
-            enable_cors(response)
-            #
-            return response
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
-
-    ################################################################################################
-    # Events
-    ################################################################################################
-
-    @get(uri_get_calendar_all)
-    def get_calendar_all(option):
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            #
-            if option == str_calendar_events:
-                data = {str_calendar_events: _icloud.get_events()}
-            elif option == str_calendar_birthdays:
-                data = {str_calendar_birthdays: _icloud.get_birthdays()}
-            else:
-                data = False
-            #
-            if not bool(data):
-                status = httpStatusFailure
-                args['result'] = logFail
-            else:
-                status = httpStatusSuccess
-                args['result'] = logPass
-            #
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            response = HTTPResponse()
-            response.status = status
-            enable_cors(response)
-            #
-            if not isinstance(data, bool):
-                response.body = data
-            #
-            return response
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
-
-    @get(uri_get_calendar_today)
-    def get_calendar_today(option):
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            #
-            if option == str_calendar_events:
-                data = {str_calendar_events: _icloud.get_events_today()}
-            elif option == str_calendar_birthdays:
-                data = {str_calendar_birthdays: _icloud.get_birthdays_today()}
-            else:
-                data = False
-            #
-            if not bool(data):
-                status = httpStatusFailure
-                args['result'] = logFail
-            else:
-                status = httpStatusSuccess
-                args['result'] = logPass
-            #
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            response = HTTPResponse()
-            response.status = status
-            enable_cors(response)
-            #
-            if not isinstance(data, bool):
-                response.body = data
-            #
-            return response
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
-
-    @get(uri_get_calendar_tomorrow)
-    def get_calendar_tomorrow(option):
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            #
-            if option == str_calendar_events:
-                data = {str_calendar_events: _icloud.get_events_tomorrow()}
-            elif option == str_calendar_birthdays:
-                data = {str_calendar_birthdays: _icloud.get_birthdays_tomorrow()}
-            else:
-                data = False
-            #
-            if not bool(data):
-                status = httpStatusFailure
-                args['result'] = logFail
-            else:
-                status = httpStatusSuccess
-                args['result'] = logPass
-            #
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            response = HTTPResponse()
-            response.status = status
-            enable_cors(response)
-            #
-            if not isinstance(data, bool):
-                response.body = data
-            #
-            return response
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
-
-    @get(uri_get_calendar_date)
-    def get_calendar_date(option, dateSpecific):
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            # '_date' should be in format "yyyy-mm-dd"
-            _date = datetime.strptime(dateSpecific, '%Y-%m-%d')
-            #
-            if option == str_calendar_events:
-                data = {str_calendar_events: _icloud.get_events_date(_date)}
-            elif option == str_calendar_birthdays:
-                data = {str_calendar_birthdays: _icloud.get_birthdays_date(_date)}
-            else:
-                data = False
-            #
-            if not bool(data):
-                status = httpStatusFailure
-                args['result'] = logFail
-            else:
-                status = httpStatusSuccess
-                args['result'] = logPass
-            #
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            response = HTTPResponse()
-            response.status = status
-            enable_cors(response)
-            #
-            if not isinstance(data, bool):
-                response.body = data
-            #
-            return response
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
-
-    @get(uri_get_calendar_range)
-    def get_calendar_daterange(option, dateFrom, dateTo):
-        #
-        args = _get_log_args(request)
-        #
-        try:
-            # '_dateFrom' and '_dateTo' should be in format "yyyy-mm-dd"
-            _dateFrom = datetime.strptime(dateFrom, '%Y-%m-%d')
-            _dateTo = datetime.strptime(dateTo, '%Y-%m-%d')
-            #
-            if option == str_calendar_events:
-                data = {str_calendar_events: _icloud.get_events_daterange(_dateFrom, _dateTo)}
-            elif option == str_calendar_birthdays:
-                data = {str_calendar_birthdays: _icloud.get_birthdays_daterange(_dateFrom, _dateTo)}
-            else:
-                data = False
-            #
-            if not bool(data):
-                status = httpStatusFailure
-                args['result'] = logFail
-            else:
-                status = httpStatusSuccess
-                args['result'] = logPass
-            #
-            args['http_response_code'] = status
-            args['description'] = '-'
-            log_inbound(**args)
-            #
-            response = HTTPResponse()
-            response.status = status
-            enable_cors(response)
-            #
-            if not isinstance(data, bool):
-                response.body = data
-            #
-            return response
-            #
-        except Exception as e:
-            #
-            status = httpStatusServererror
-            #
-            args['result'] = logException
-            args['http_response_code'] = status
-            args['description'] = '-'
-            args['exception'] = e
-            log_inbound(**args)
-            #
-            raise HTTPError(status)
+    uri_get_devices = '/icloud/devices'
+    uri_get_device_location = '/icloud/device/<deviceid>/location'
+    uri_get_device_status = '/icloud/device/<deviceid>/status'
+    uri_post_device_playsound = '/icloud/device/<deviceid>/playsound'
+    uri_post_device_lostmode = '/icloud/device/<deviceid>/lostmode'
+    uri_get_contacts = '/icloud/contacts'
+    uri_get_files = '/icloud/files'
+    uri_get_photos = '/icloud/photos'
 
     ################################################################################################
 
