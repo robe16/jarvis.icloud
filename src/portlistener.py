@@ -2,7 +2,7 @@ from bottle import request, run, route, get, post
 
 from config.config import get_cfg_port
 from log.log import log_internal
-from common_functions.request_enable_cors import enable_cors, response_options
+from common_functions.request_enable_cors import response_options
 from resources.global_resources.log_vars import logPass
 from resources.lang.enGB.logs import *
 from service.icloud import ICloud
