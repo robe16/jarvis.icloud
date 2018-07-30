@@ -44,7 +44,7 @@ def start_bottle():
 
     @get('/config')
     def api_get_config():
-        return response_options()
+        return get_config()
 
     @get('/icloud/2fa')
     def api_get_2fa_html():
