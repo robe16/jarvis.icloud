@@ -3,6 +3,7 @@ from bottle import request, run
 
 from config.config import get_cfg_port
 from log.log import log_internal
+from common_functions.request_enable_cors import enable_cors
 from resources.global_resources.log_vars import logPass
 from resources.lang.enGB.logs import *
 from service.icloud import ICloud
@@ -51,27 +52,37 @@ def start_bottle():
 
     @post('/icloud/2fa/code/validate')
     def api_post_2fa_code_validate():
-        post_2fa_code_validate(request, _icloud)
+        return post_2fa_code_validate(request, _icloud)
 
     @get('/icloud/<option>/all')
     def api_get_calendar_all(option):
-        return get_calendar_all(request, _icloud, option)
+        response = get_calendar_all(request, _icloud, option)
+        enable_cors(response)
+        return response
 
     @get('/icloud/<option>/today')
     def api_get_calendar_today(option):
-        return get_calendar_today(request, _icloud, option)
+        response = get_calendar_today(request, _icloud, option)
+        enable_cors(response)
+        return response
 
     @get('/icloud/<option>/tomorrow')
     def api_get_calendar_tomorrow(option):
-        return get_calendar_tomorrow(request, _icloud, option)
+        response = get_calendar_tomorrow(request, _icloud, option)
+        enable_cors(response)
+        return response
 
     @get('/icloud/<option>/date/<dateSpecific>')
     def api_get_calendar_date(option, dateSpecific):
-        return get_calendar_date(request, _icloud, option, dateSpecific)
+        response = get_calendar_date(request, _icloud, option, dateSpecific)
+        enable_cors(response)
+        return response
 
     @get('/icloud/<option>/daterange/datefrom/<dateFrom>/dateto/<dateTo>')
     def api_get_calendar_daterange(option, dateFrom, dateTo):
-        return get_calendar_daterange(request, _icloud, option, dateFrom, dateTo)
+        response = get_calendar_daterange(request, _icloud, option, dateFrom, dateTo)
+        enable_cors(response)
+        return response
 
 
     ################################################################################################
