@@ -1,9 +1,8 @@
-from bottle import get, post
-from bottle import request, run
+from bottle import request, run, route, get, post
 
 from config.config import get_cfg_port
 from log.log import log_internal
-from common_functions.request_enable_cors import enable_cors
+from common_functions.request_enable_cors import enable_cors, response_options
 from resources.global_resources.log_vars import logPass
 from resources.lang.enGB.logs import *
 from service.icloud import ICloud
@@ -34,9 +33,18 @@ def start_bottle():
     # APIs
     ################################################################################################
 
+    @route('/config', method=['OPTIONS'])
+    @route('/icloud/<option>/all', method=['OPTIONS'])
+    @route('/icloud/<option>/today', method=['OPTIONS'])
+    @route('/icloud/<option>/tomorrow', method=['OPTIONS'])
+    @route('/icloud/<option>/date/<dateSpecific>', method=['OPTIONS'])
+    @route('/icloud/<option>/daterange/datefrom/<dateFrom>/dateto/<dateTo>', method=['OPTIONS'])
+    def api_cors_options():
+        return response_options()
+
     @get('/config')
     def api_get_config():
-        return get_config(request)
+        return response_options()
 
     @get('/icloud/2fa')
     def api_get_2fa_html():
@@ -56,33 +64,23 @@ def start_bottle():
 
     @get('/icloud/<option>/all')
     def api_get_calendar_all(option):
-        response = get_calendar_all(request, _icloud, option)
-        enable_cors(response)
-        return response
+        return get_calendar_all(request, _icloud, option)
 
     @get('/icloud/<option>/today')
     def api_get_calendar_today(option):
-        response = get_calendar_today(request, _icloud, option)
-        enable_cors(response)
-        return response
+        return get_calendar_today(request, _icloud, option)
 
     @get('/icloud/<option>/tomorrow')
     def api_get_calendar_tomorrow(option):
-        response = get_calendar_tomorrow(request, _icloud, option)
-        enable_cors(response)
-        return response
+        return get_calendar_tomorrow(request, _icloud, option)
 
     @get('/icloud/<option>/date/<dateSpecific>')
     def api_get_calendar_date(option, dateSpecific):
-        response = get_calendar_date(request, _icloud, option, dateSpecific)
-        enable_cors(response)
-        return response
+        return get_calendar_date(request, _icloud, option, dateSpecific)
 
     @get('/icloud/<option>/daterange/datefrom/<dateFrom>/dateto/<dateTo>')
     def api_get_calendar_daterange(option, dateFrom, dateTo):
-        response = get_calendar_daterange(request, _icloud, option, dateFrom, dateTo)
-        enable_cors(response)
-        return response
+        return get_calendar_daterange(request, _icloud, option, dateFrom, dateTo)
 
 
     ################################################################################################
