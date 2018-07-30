@@ -39,7 +39,7 @@ def start_bottle():
     @route('/icloud/<option>/tomorrow', method=['OPTIONS'])
     @route('/icloud/<option>/date/<dateSpecific>', method=['OPTIONS'])
     @route('/icloud/<option>/daterange/datefrom/<dateFrom>/dateto/<dateTo>', method=['OPTIONS'])
-    def api_cors_options():
+    def api_cors_options(**kwargs):
         return response_options()
 
     @get('/config')
