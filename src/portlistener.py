@@ -2,7 +2,7 @@ from bottle import request, run, route, get, post
 
 from config.config import get_cfg_port
 from log.log import log_internal
-from common_functions.request_enable_cors import response_options
+from common_functions.request_enable_cors import enable_cors, response_options
 from resources.global_resources.log_vars import logPass
 from resources.lang.enGB.logs import *
 from service.icloud import ICloud
@@ -44,7 +44,8 @@ def start_bottle():
 
     @get('/config')
     def api_get_config():
-        return get_config()
+        response = get_config(request)
+        return enable_cors(response)
 
     @get('/icloud/2fa')
     def api_get_2fa_html():
@@ -64,23 +65,28 @@ def start_bottle():
 
     @get('/icloud/<option>/all')
     def api_get_calendar_all(option):
-        return get_calendar_all(request, _icloud, option)
+        response = get_calendar_all(request, _icloud, option)
+        return enable_cors(response)
 
     @get('/icloud/<option>/today')
     def api_get_calendar_today(option):
-        return get_calendar_today(request, _icloud, option)
+        response = get_calendar_today(request, _icloud, option)
+        return enable_cors(response)
 
     @get('/icloud/<option>/tomorrow')
     def api_get_calendar_tomorrow(option):
-        return get_calendar_tomorrow(request, _icloud, option)
+        response = get_calendar_tomorrow(request, _icloud, option)
+        return enable_cors(response)
 
     @get('/icloud/<option>/date/<dateSpecific>')
     def api_get_calendar_date(option, dateSpecific):
-        return get_calendar_date(request, _icloud, option, dateSpecific)
+        response = get_calendar_date(request, _icloud, option, dateSpecific)
+        return enable_cors(response)
 
     @get('/icloud/<option>/daterange/datefrom/<dateFrom>/dateto/<dateTo>')
     def api_get_calendar_daterange(option, dateFrom, dateTo):
-        return get_calendar_daterange(request, _icloud, option, dateFrom, dateTo)
+        response = get_calendar_daterange(request, _icloud, option, dateFrom, dateTo)
+        return enable_cors(response)
 
 
     ################################################################################################
