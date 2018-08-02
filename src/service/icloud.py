@@ -211,6 +211,7 @@ class ICloud():
 
     def _convert_icloud_events(self, _events):
         #
+        usedGuids = []
         tempGuids = {}
         for event in _events:
             if event['guid'] in tempGuids.keys():
@@ -220,13 +221,15 @@ class ICloud():
         #
         new_events = []
         for event in _events:
-            # put event in structure for json
-            new_e = self._convert_icloud_event(event)
-            # find all calendars for this event and add to new_e
-            if event['guid'] in tempGuids.keys():
-                new_e['calendars'] = tempGuids[event['guid']]
-            #
-            new_events.append(new_e)
+            if not event['guid'] in usedGuids:
+                # put event in structure for json
+                new_e = self._convert_icloud_event(event)
+                # find all calendars for this event and add to new_e
+                if event['guid'] in tempGuids.keys():
+                    new_e['calendars'] = tempGuids[event['guid']]
+                #
+                new_events.append(new_e)
+                usedGuids.append(event['guid'])
         #
         return new_events
 
