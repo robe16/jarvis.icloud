@@ -5,7 +5,7 @@ var httpStatusFailure = 420
 var httpStatusServererror = 500
 
 function requestCode() {
-    httpGetAsync("/icloud/2fa/code/request", "POST", null, requestCode_callback);
+    httpGetAsync("/icloud/authentication/2fa/code/request", "POST", null, requestCode_callback);
 }
 function requestCode_callback(result, response={}) {
     if (result==httpStatusSuccess) {
@@ -23,7 +23,7 @@ function requestCode_callback(result, response={}) {
 
 function validateCode() {
     var code = document.getElementById("codeInput").value;
-    httpGetAsync("/icloud/2fa/code/validate", "POST", {'2fa_code': code}, validateCode_callback);
+    httpGetAsync("/icloud/authentication/2fa/code/validate", "POST", {'2fa_code': code}, validateCode_callback);
 }
 function validateCode_callback(result, response={}) {
     if (httpStatusSuccess) {

@@ -17,7 +17,13 @@ def get_config(request):
                 'name_long': get_cfg_name_long(),
                 'name_short': get_cfg_name_short(),
                 'subservices': get_cfg_subservices(),
-                'groups': get_cfg_groups()}
+                'groups': get_cfg_groups(),
+                'ui_links': [
+                    {'label': 'Authentication (2FA)',
+                     'description': 'Undertake two-factor authentication (2FA) to allow access to iCloud account.',
+                     'uri': '/icloud/authentication/2fa/2fa.html'}
+                    ]
+                }
         #
         status = httpStatusSuccess
         #

@@ -47,19 +47,19 @@ def start_bottle():
         response = get_config(request)
         return enable_cors(response)
 
-    @get('/icloud/2fa')
+    @get('/icloud/authentication/2fa/2fa.html')
     def api_get_2fa_html():
         return get_2fa_html(request)
 
-    @get('/icloud/2fa/2fa.js')
+    @get('/icloud/authentication/2fa/2fa.js')
     def api_get_2fa_js():
         return get_2fa_js(request)
 
-    @post('/icloud/2fa/code/request')
+    @post('/icloud/authentication/2fa/code/request')
     def api_post_2fa_code_request():
         return post_2fa_code_request(request, _icloud)
 
-    @post('/icloud/2fa/code/validate')
+    @post('/icloud/authentication/2fa/code/validate')
     def api_post_2fa_code_validate():
         return post_2fa_code_validate(request, _icloud)
 
