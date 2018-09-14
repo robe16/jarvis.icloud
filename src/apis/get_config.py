@@ -19,9 +19,9 @@ def get_config(request):
                 'subservices': get_cfg_subservices(),
                 'groups': get_cfg_groups(),
                 'ui_links': [
-                    {'label': 'Authentication (2SA)',
-                     'description': 'Undertake two-step authentication (2SA) to allow access to iCloud account.',
-                     'uri': '/icloud/authentication/2sa/2sa.html'}
+                    {'label': 'Authentication (2FA)',
+                     'description': 'Undertake two-factor authentication (2FA) to allow access to iCloud account.',
+                     'uri': '/icloud/authentication/2fa/2fa.html'}
                     ]
                 }
         #
