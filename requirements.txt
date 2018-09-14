@@ -1,4 +1,4 @@
 requests
 bottle
 Paste
-pyicloud
+pyicloud==0.9.1
