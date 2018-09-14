@@ -3,7 +3,7 @@ from datetime import datetime, date, timedelta
 from time import time
 
 from config.config import get_cfg_details_account_username, get_cfg_details_account_password
-from config.config import get_cfg_details_2fa_deviceType, get_cfg_details_2fa_phoneNumber
+from config.config import get_cfg_details_2sa_deviceType, get_cfg_details_2sa_phoneNumber
 from config.config import get_cfg_details_calendar_name, get_cfg_details_calendar_colour
 from log.log import log_outbound, log_internal
 from resources.global_resources.log_vars import logPass, logFail, logException
@@ -19,37 +19,37 @@ class ICloud():
 
     # 2SA/2FA
 
-    def check2sa(self):
-        # no function 'requires_2sa available yet from PyiCloudService,
+    def check2fa(self):
+        # no function 'requires_2fa available yet from PyiCloudService,
         # therefore default to False and update when available
         return {'2fa': False}
-        # r = self._icloud.requires_2sa
+        # r = self._icloud.requires_2fa
         # if r:
-        #     return {'2fs': True}
+        #     return {'2fa': True}
         # else:
-        #     return {'2sa': False}
+        #     return {'2fa': False}
 
-    def check2fa(self):
-        r = self._icloud.requires_2fa
+    def check2sa(self):
+        r = self._icloud.requires_2sa
         if r:
-            return {'2fa': True}
+            return {'2sa': True}
         else:
-            return {'2fa': False}
+            return {'2sa': False}
 
-    def get_2fa_trusted_devices(self):
-        if self._icloud.requires_2fa:
+    def get_2sa_trusted_devices(self):
+        if self._icloud.requires_2sa:
             devices = self._icloud.trusted_devices
-            return {'2fa': True,
+            return {'2sa': True,
                     'devices': devices}
         else:
-            return {'2fa': False,
+            return {'2sa': False,
                     'devices': []}
 
-    def _get_2fa_trusted_device_default(self):
-        devices = self.get_2fa_trusted_devices()
-        if devices['2fa']:
+    def _get_2sa_trusted_device_default(self):
+        devices = self.get_2sa_trusted_devices()
+        if devices['2sa']:
             for d in devices['devices']:
-                default_deviceType = get_cfg_details_2fa_deviceType()
+                default_deviceType = get_cfg_details_2sa_deviceType()
                 if d['deviceType'] == default_deviceType:
                     if default_deviceType == 'SMS':
                         return {'device': d}
@@ -57,7 +57,7 @@ class ICloud():
             return {'device': False,
                     'error': 'Jarvis does not hold a default devices that matches those returned by iCloud.'}
         return {'device': False,
-                'error': 'iCloud has reported back that 2FA is not required for access to services.'}
+                'error': 'iCloud has reported back that 2SA is not required for access to services.'}
 
     # note that 'device' must be in the correct dict structure
     def request_validation_code(self, device):
@@ -68,7 +68,7 @@ class ICloud():
 
     def request_validation_code_default(self):
         #
-        device = self._get_2fa_trusted_device_default()
+        device = self._get_2sa_trusted_device_default()
         #
         if device['device']:
             return {'result': self.request_validation_code(device['device'])}
@@ -85,7 +85,7 @@ class ICloud():
 
     def validate_validation_code_default(self, code):
         #
-        device = self._get_2fa_trusted_device_default()
+        device = self._get_2sa_trusted_device_default()
         #
         if device:
             return self.validate_validation_code(device, code)

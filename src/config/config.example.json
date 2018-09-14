@@ -9,7 +9,7 @@
     "details": {
         "username": "name@email.co.uk",
         "password": "P@$$w0rd",
-        "2fa_default": {
+        "2sa_default": {
             "deviceType": "SMS",
             "phoneNumber": "********01"
         },

@@ -7,7 +7,7 @@ from resources.global_resources.log_vars import logPass, logFail, logException
 from resources.global_resources.variables import *
 
 
-def post_2fa_code_request(request, _icloud):
+def post_2sa_code_request(request, _icloud):
     #
     args = get_request_log_args(request)
     #

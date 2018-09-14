@@ -5,7 +5,7 @@ var httpStatusFailure = 420
 var httpStatusServererror = 500
 
 function requestCode() {
-    httpGetAsync("/icloud/authentication/2fa/code/request", "POST", null, requestCode_callback);
+    httpGetAsync("/icloud/authentication/2sa/code/request", "POST", null, requestCode_callback);
 }
 function requestCode_callback(result, response={}) {
     if (result==httpStatusSuccess) {
@@ -23,7 +23,7 @@ function requestCode_callback(result, response={}) {
 
 function validateCode() {
     var code = document.getElementById("codeInput").value;
-    httpGetAsync("/icloud/authentication/2fa/code/validate", "POST", {'2fa_code': code}, validateCode_callback);
+    httpGetAsync("/icloud/authentication/2sa/code/validate", "POST", {'2sa_code': code}, validateCode_callback);
 }
 function validateCode_callback(result, response={}) {
     if (httpStatusSuccess) {
@@ -39,7 +39,7 @@ function validateCode_callback(result, response={}) {
 function httpGetAsync(theUri, method, body, callback) {
     //
     //var service_header_clientid_label = "jarvis.client-service";
-    //var service_id = "icloud_2fa";
+    //var service_id = "icloud_2sa";
     //
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {

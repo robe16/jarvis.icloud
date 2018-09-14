@@ -8,12 +8,12 @@ from resources.global_resources.log_vars import logPass, logException
 from resources.global_resources.variables import *
 
 
-def get_2fa_html(request):
+def get_2sa_html(request):
     #
     args = get_request_log_args(request)
     #
     try:
-        with open(os.path.join(os.path.dirname(__file__), '..', 'service/2fa/2fa.html'), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'service/2sa/2sa.html'), 'r') as f:
             page_body = f.read()
         #
         status = httpStatusSuccess
