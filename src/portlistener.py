@@ -8,10 +8,10 @@ from resources.lang.enGB.logs import *
 from service.icloud import ICloud
 
 from apis.get_config import get_config
-from apis.get_2sa_html import get_2sa_html
-from apis.get_2sa_js import get_2sa_js
-from apis.post_2sa_code_request import post_2sa_code_request
-from apis.post_2sa_code_validate import post_2sa_code_validate
+from apis.get_2fa_html import get_2fa_html
+from apis.get_2fa_js import get_2fa_js
+from apis.post_2fa_code_request import post_2fa_code_request
+from apis.post_2fa_code_validate import post_2fa_code_validate
 from apis.get_calendar_all import get_calendar_all
 from apis.get_calendar_today import get_calendar_today
 from apis.get_calendar_tomorrow import get_calendar_tomorrow
@@ -47,21 +47,21 @@ def start_bottle():
         response = get_config(request)
         return enable_cors(response)
 
-    @get('/icloud/authentication/2sa/2sa.html')
+    @get('/icloud/authentication/2fa/2fa.html')
     def api_get_2fa_html():
-        return get_2sa_html(request)
+        return get_2fa_html(request)
 
-    @get('/icloud/authentication/2sa/2sa.js')
+    @get('/icloud/authentication/2fa/2fa.js')
     def api_get_2fa_js():
-        return get_2sa_js(request)
+        return get_2fa_js(request)
 
-    @post('/icloud/authentication/2sa/code/request')
+    @post('/icloud/authentication/2fa/code/request')
     def api_post_2fa_code_request():
-        return post_2sa_code_request(request, _icloud)
+        return post_2fa_code_request(request, _icloud)
 
-    @post('/icloud/authentication/2sa/code/validate')
+    @post('/icloud/authentication/2fa/code/validate')
     def api_post_2fa_code_validate():
-        return post_2sa_code_validate(request, _icloud)
+        return post_2fa_code_validate(request, _icloud)
 
     @get('/icloud/<option>/all')
     def api_get_calendar_all(option):

@@ -8,7 +8,7 @@ from resources.global_resources.log_vars import logPass, logException
 from resources.global_resources.variables import *
 
 
-def get_2sa_js(request):
+def get_2fa_js(request):
     #
     args = get_request_log_args(request)
     #
@@ -21,8 +21,8 @@ def get_2sa_js(request):
         args['description'] = '-'
         log_inbound(**args)
         #
-        root = os.path.join(os.path.dirname(__file__), '..', 'service/2sa')
-        response = static_file('2sa.js', root=root)
+        root = os.path.join(os.path.dirname(__file__), '..', 'service/2fa')
+        response = static_file('2fa.js', root=root)
         response.status = status
         enable_cors(response)
         #

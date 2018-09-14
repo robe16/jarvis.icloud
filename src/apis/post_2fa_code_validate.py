@@ -7,14 +7,14 @@ from resources.global_resources.log_vars import logPass, logFail, logException
 from resources.global_resources.variables import *
 
 
-def post_2sa_code_validate(request, _icloud):
+def post_2fa_code_validate(request, _icloud):
     #
     args = get_request_log_args(request)
     #
     try:
         #
         code = dict(request.json)
-        code = code['2sa_code']
+        code = code['2fa_code']
         #
         r = _icloud.validate_validation_code_default(code)
         #

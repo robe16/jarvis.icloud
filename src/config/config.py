@@ -87,16 +87,16 @@ def get_cfg_details_account_password():
     return get_cfg_details()['password']
 
 
-def get_cfg_details_2sa():
-    return get_cfg_details()['2sa_default']
+def get_cfg_details_2fa():
+    return get_cfg_details()['2fa_default']
 
 
-def get_cfg_details_2sa_deviceType():
-    return get_cfg_details_2sa()['deviceType']
+def get_cfg_details_2fa_deviceType():
+    return get_cfg_details_2fa()['deviceType']
 
 
-def get_cfg_details_2sa_phoneNumber():
-    return get_cfg_details_2sa()['phoneNumber']
+def get_cfg_details_2fa_phoneNumber():
+    return get_cfg_details_2fa()['phoneNumber']
 
 
 def get_cfg_details_calendars():
