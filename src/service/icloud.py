@@ -1,6 +1,7 @@
 from pyicloud import PyiCloudService
 from datetime import datetime, date, timedelta
 
+import cache
 from config.config import get_cfg_details_account_username, get_cfg_details_account_password
 from config.config import get_cfg_details_2fa_deviceType, get_cfg_details_2fa_phoneNumber
 from config.config import get_cfg_details_calendar_name, get_cfg_details_calendar_colour
@@ -12,6 +13,8 @@ class ICloud():
         #
         self._icloud = PyiCloudService(get_cfg_details_account_username(),
                                        get_cfg_details_account_password())
+        #
+        cache.cache['_2fa/2sv-complete'] = False
 
     # 2FA
     def check2fa(self):
@@ -64,6 +67,7 @@ class ICloud():
     # note that 'device' must be in the correct dict structure
     def validate_validation_code(self, device, code):
         if self._icloud.validate_verification_code(device, code):
+            cache.cache['_2fa/2sv-complete'] = True
             return True
         else:
             return False
