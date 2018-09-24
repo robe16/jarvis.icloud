@@ -10,8 +10,8 @@ def start_service():
     cache.cache['_icloud'] = ICloud()
     cache.cache['calendar'] = {}
     #
-    thread_event = threading.Thread(target=eventUpdater_service)
-    thread_event.start()
-    #
     thread_birthday = threading.Thread(target=birthdayUpdater_service)
     thread_birthday.start()
+    #
+    thread_event = threading.Thread(target=eventUpdater_service)
+    thread_event.start()

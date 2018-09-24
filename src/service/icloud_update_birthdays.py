@@ -31,8 +31,8 @@ def birthdayUpdater_service():
             #
             try:
                 data = cache.cache['_icloud'].get_birthdays()
-                cache.cache['calendar']['birthdays'] = data['birthdays']
-                log_args['result'] = logPass if data['status'] == 'ok' else logFail
+                cache.cache['calendar']['birthdays'] = data
+                log_args['result'] = logPass if len(data) else logFail
             except Exception as e:
                 log_args['result'] = logException
                 log_args['exception'] = e

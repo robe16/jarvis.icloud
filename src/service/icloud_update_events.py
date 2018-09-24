@@ -28,10 +28,11 @@ def eventUpdater_service():
                         'description': '-'}
             #
             ####
+            #
             try:
                 data = cache.cache['_icloud'].get_events()
-                cache.cache['calendar']['events'] = data['events']
-                log_args['result'] = logPass if data['status'] == 'ok' else logFail
+                cache.cache['calendar']['events'] = data
+                log_args['result'] = logPass if len(data) else logFail
             except Exception as e:
                 log_args['result'] = logException
                 log_args['exception'] = e
