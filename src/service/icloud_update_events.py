@@ -11,7 +11,7 @@ retrieval_frequency = 300  # 5 minutes
 def eventUpdater_service():
     #
     while True:
-        cache.cache['calendar']['events'] = {}
+        cache.cache['calendar']['events'] = []
         #
         ####
         data = cache.cache['_icloud'].get_events()

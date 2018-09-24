@@ -11,7 +11,7 @@ retrieval_frequency = 600  # 10 minutes
 def birthdayUpdater_service():
     #
     while True:
-        cache.cache['calendar']['birthdays'] = {}
+        cache.cache['calendar']['birthdays'] = []
         #
         ####
         data = cache.cache['_icloud'].get_birthdays()

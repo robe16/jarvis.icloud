@@ -6,8 +6,9 @@ from service.icloud_update_birthdays import birthdayUpdater_service
 
 
 def start_service():
-    # Initiate icloud object to cache updating
+    #
     cache.cache['_icloud'] = ICloud()
+    cache.cache['calendar'] = {}
     #
     thread_event = threading.Thread(target=eventUpdater_service)
     thread_event.start()
