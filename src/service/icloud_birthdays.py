@@ -28,7 +28,7 @@ def _get_birthdays(from_dt, to_dt):
     to_d = to_dt.day
     to_m = to_dt.month
     #
-    birthdays = cache.cache['birthdays']
+    birthdays = cache.cache['calendar']['birthdays']
     for b in birthdays:
         bday_d = datetime.strptime(b['birthday'], '%Y-%m-%d').day
         bday_m = datetime.strptime(b['birthday'], '%Y-%m-%d').month
