@@ -2,7 +2,7 @@ from time import sleep
 from datetime import datetime
 
 import cache
-from resources.global_resources.log_vars import logPass, logFail
+from resources.global_resources.log_vars import logPass, logFail, logException
 from resources.lang.enGB.logs import *
 
 retrieval_frequency = 300  # 5 minutes
@@ -13,24 +13,27 @@ def eventUpdater_service():
     while True:
         cache.cache['calendar']['events'] = []
         #
+        log_args = {'timestamp': datetime.now(),
+                    'process': 'outbound',
+                    'service_ip': '-',
+                    'service_port': '',
+                    'service_method': 'GET',
+                    'service_request_uri': logDesc_icloud_uri_events,
+                    'service_request_query': '-',
+                    'service_request_body': '-',
+                    'http_response_code': 'unknown',
+                    'description': '-'}
+        #
         ####
-        data = cache.cache['_icloud'].get_events()
+        try:
+            data = cache.cache['_icloud'].get_events()
+            cache.cache['calendar']['events'] = data['events']
+            log_args['result'] = logPass if data['status'] == 'ok' else logFail
+        except Exception as e:
+            log_args['result'] = logException
+            log_args['exception'] = e
         #
-        cache.cache['calendar']['events'] = data['events']
-        #
-        # Logging
-        result = logPass if data['status'] == 'ok' else logFail
-        cache.logQ.put({'timestamp': datetime.now(),
-                        'process': 'outbound', 'result': result,
-                        'service_ip': '-',
-                        'service_port': '',
-                        'service_method': 'GET',
-                        'service_request_uri': logDesc_icloud_uri_events,
-                        'service_request_query': '-',
-                        'service_request_body': '-',
-                        'http_response_code': 'unknown',
-                        'description': '-'})
-        #
+        cache.logQ.put(log_args)
         ####
         #
         sleep(retrieval_frequency)
