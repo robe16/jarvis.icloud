@@ -1,13 +1,9 @@
 from pyicloud import PyiCloudService
 from datetime import datetime, date, timedelta
-from time import time
 
 from config.config import get_cfg_details_account_username, get_cfg_details_account_password
 from config.config import get_cfg_details_2fa_deviceType, get_cfg_details_2fa_phoneNumber
 from config.config import get_cfg_details_calendar_name, get_cfg_details_calendar_colour
-from log.log import log_outbound, log_internal
-from resources.global_resources.log_vars import logPass, logFail, logException
-from resources.lang.enGB.logs import *
 
 
 class ICloud():
@@ -18,7 +14,6 @@ class ICloud():
                                        get_cfg_details_account_password())
 
     # 2FA
-
     def check2fa(self):
         r = self._icloud.requires_2fa
         if r:
@@ -83,7 +78,6 @@ class ICloud():
             return False
 
     # Devices
-
     def get_devices(self):
         devices = self._icloud.devices
         return devices
@@ -93,12 +87,10 @@ class ICloud():
         return devices
 
     # Contacts
-
     def get_contacts(self):
         return self._icloud.contacts.all()
 
     # Calendar - events
-
     def get_events(self):
         return self._convert_icloud_events(self._icloud.calendar.events())
 
@@ -121,7 +113,6 @@ class ICloud():
         return _events
 
     # Calendar - birthdays
-
     def get_birthdays(self):
         contacts = self.get_contacts()
         birthdays = []
@@ -139,49 +130,6 @@ class ICloud():
                 birthdays.append(b)
         return birthdays
 
-    def get_birthdays_today(self):
-        return self._get_birthdays(date.today(), date.today())
-
-    def get_birthdays_tomorrow(self):
-        return self._get_birthdays(date.today() + timedelta(days=1),
-                                date.today() + timedelta(days=1))
-
-    def get_birthdays_date(self, _date):
-        return self._get_birthdays(_date, _date)
-
-    def get_birthdays_daterange(self, dateFrom, dateTo):
-        return self._get_birthdays(dateFrom, dateTo)
-
-    def _get_birthdays(self, from_dt, to_dt):
-        #
-        new_bdays = []
-        #
-        from_d = from_dt.day
-        from_m = from_dt.month
-        to_d = to_dt.day
-        to_m = to_dt.month
-        #
-        birthdays = self.get_birthdays()
-        for b in birthdays:
-            bday_d = datetime.strptime(b['birthday'], '%Y-%m-%d').day
-            bday_m = datetime.strptime(b['birthday'], '%Y-%m-%d').month
-            #
-            if from_m < to_m:
-                if (bday_m == from_m and bday_d >= from_d) or \
-                        (bday_m == to_m and bday_d <= to_d) or \
-                        (from_m <= bday_m <= to_m and from_d <= bday_d <= to_d):
-                    new_bdays.append(b)
-            elif from_m > to_m:
-                if (bday_m == from_m and bday_d <= from_d) or \
-                        (bday_m == to_m and bday_d >= to_d) or \
-                        (to_m <= bday_m <= from_m and from_d <= bday_d <= to_d):
-                    new_bdays.append(b)
-            else:
-                if from_m == bday_m and from_d <= bday_d <= to_d:
-                    new_bdays.append(b)
-        #
-        return new_bdays
-
     @staticmethod
     def _get_calendar_details(_event):
         #
@@ -198,7 +146,6 @@ class ICloud():
 
     # guid = event id that is used in same event even across invitees
     # pGuid = calendar id unique to specific calendar and user
-
     def _convert_icloud_events(self, _events):
         #
         usedGuids = []

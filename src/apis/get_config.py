@@ -1,8 +1,9 @@
 from bottle import HTTPResponse, HTTPError
+from datetime import datetime
 
+import cache
 from common_functions.request_log_args import get_request_log_args
 from config.config import get_cfg_serviceid, get_cfg_name_long, get_cfg_name_short, get_cfg_groups, get_cfg_subservices
-from log.log import log_inbound
 from resources.global_resources.log_vars import logPass, logException
 from resources.global_resources.variables import *
 
@@ -10,6 +11,8 @@ from resources.global_resources.variables import *
 def get_config(request):
     #
     args = get_request_log_args(request)
+    args['timestamp'] = datetime.now()
+    args['process'] = 'inbound'
     #
     try:
         #
@@ -30,7 +33,7 @@ def get_config(request):
         args['result'] = logPass
         args['http_response_code'] = status
         args['description'] = '-'
-        log_inbound(**args)
+        cache.logQ.put(args)
         #
         return HTTPResponse(body=data, status=status)
         #
@@ -42,6 +45,6 @@ def get_config(request):
         args['http_response_code'] = status
         args['description'] = '-'
         args['exception'] = e
-        log_inbound(**args)
+        cache.logQ.put(args)
         #
         raise HTTPError(status)

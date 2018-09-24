@@ -1,11 +1,11 @@
 from bottle import request, run, route, get, post
+import datetime
 
+import cache
 from config.config import get_cfg_port
-from log.log import log_internal
 from common_functions.request_enable_cors import enable_cors, response_options
 from resources.global_resources.log_vars import logPass
 from resources.lang.enGB.logs import *
-from service.icloud import ICloud
 
 from apis.get_config import get_config
 from apis.get_2fa_html import get_2fa_html
@@ -19,15 +19,7 @@ from apis.get_calendar_date import get_calendar_date
 from apis.get_calendar_daterange import get_calendar_daterange
 
 
-def start_bottle():
-
-    ################################################################################################
-    # Create device
-    ################################################################################################
-
-    _icloud = ICloud()
-
-    log_internal(logPass, logDescDeviceObjectCreation, description='success')
+def start_server():
 
     ################################################################################################
     # APIs
@@ -57,35 +49,35 @@ def start_bottle():
 
     @post('/icloud/authentication/2fa/code/request')
     def api_post_2fa_code_request():
-        return post_2fa_code_request(request, _icloud)
+        return post_2fa_code_request(request)
 
     @post('/icloud/authentication/2fa/code/validate')
     def api_post_2fa_code_validate():
-        return post_2fa_code_validate(request, _icloud)
+        return post_2fa_code_validate(request)
 
     @get('/icloud/<option>/all')
     def api_get_calendar_all(option):
-        response = get_calendar_all(request, _icloud, option)
+        response = get_calendar_all(request, option)
         return enable_cors(response)
 
     @get('/icloud/<option>/today')
     def api_get_calendar_today(option):
-        response = get_calendar_today(request, _icloud, option)
+        response = get_calendar_today(request, option)
         return enable_cors(response)
 
     @get('/icloud/<option>/tomorrow')
     def api_get_calendar_tomorrow(option):
-        response = get_calendar_tomorrow(request, _icloud, option)
+        response = get_calendar_tomorrow(request, option)
         return enable_cors(response)
 
     @get('/icloud/<option>/date/<dateSpecific>')
     def api_get_calendar_date(option, dateSpecific):
-        response = get_calendar_date(request, _icloud, option, dateSpecific)
+        response = get_calendar_date(request, option, dateSpecific)
         return enable_cors(response)
 
     @get('/icloud/<option>/daterange/datefrom/<dateFrom>/dateto/<dateTo>')
     def api_get_calendar_daterange(option, dateFrom, dateTo):
-        response = get_calendar_daterange(request, _icloud, option, dateFrom, dateTo)
+        response = get_calendar_daterange(request, option, dateFrom, dateTo)
         return enable_cors(response)
 
 
@@ -107,6 +99,8 @@ def start_bottle():
     port = get_cfg_port()
     run(host=host, port=port, server='paste', debug=True)
 
-    log_internal(logPass, logDescPortListener.format(port=port), description='started')
+    cache.logQ.put({'timestamp': datetime.now(),
+                    'process': 'internal', 'result': logPass,
+                    'operation': logDescPortListener.format(port=port), 'description': 'started'})
 
     ################################################################################################

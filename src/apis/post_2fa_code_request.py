@@ -1,18 +1,21 @@
 from bottle import HTTPResponse, HTTPError
+from datetime import datetime
 
+import cache
 from common_functions.request_enable_cors import enable_cors
 from common_functions.request_log_args import get_request_log_args
-from log.log import log_inbound
 from resources.global_resources.log_vars import logPass, logFail, logException
 from resources.global_resources.variables import *
 
 
-def post_2fa_code_request(request, _icloud):
+def post_2fa_code_request(request):
     #
     args = get_request_log_args(request)
+    args['timestamp'] = datetime.now()
+    args['process'] = 'inbound'
     #
     try:
-        r = _icloud.request_validation_code_default()
+        r = cache.cache['_icloud'].request_validation_code_default()
         #
         if r['result']:
             status = httpStatusSuccess
@@ -23,7 +26,7 @@ def post_2fa_code_request(request, _icloud):
         #
         args['http_response_code'] = status
         args['description'] = '-'
-        log_inbound(**args)
+        cache.logQ.put(args)
         #
         response = HTTPResponse()
         response.status = status
@@ -40,6 +43,6 @@ def post_2fa_code_request(request, _icloud):
         args['http_response_code'] = status
         args['description'] = '-'
         args['exception'] = e
-        log_inbound(**args)
+        cache.logQ.put(args)
         #
         raise HTTPError(status)

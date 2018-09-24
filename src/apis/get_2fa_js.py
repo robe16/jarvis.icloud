@@ -1,9 +1,10 @@
 import os
+from datetime import datetime
 from bottle import HTTPResponse, static_file
 
+import cache
 from common_functions.request_enable_cors import enable_cors
 from common_functions.request_log_args import get_request_log_args
-from log.log import log_inbound
 from resources.global_resources.log_vars import logPass, logException
 from resources.global_resources.variables import *
 
@@ -11,6 +12,8 @@ from resources.global_resources.variables import *
 def get_2fa_js(request):
     #
     args = get_request_log_args(request)
+    args['timestamp'] = datetime.now()
+    args['process'] = 'inbound'
     #
     try:
         #
@@ -19,7 +22,7 @@ def get_2fa_js(request):
         #
         args['http_response_code'] = status
         args['description'] = '-'
-        log_inbound(**args)
+        cache.logQ.put(args)
         #
         root = os.path.join(os.path.dirname(__file__), '..', 'service/2fa')
         response = static_file('2fa.js', root=root)
@@ -36,6 +39,6 @@ def get_2fa_js(request):
         args['http_response_code'] = status
         args['description'] = '-'
         args['exception'] = e
-        log_inbound(**args)
+        cache.logQ.put(args)
         #
         raise HTTPResponse(status=status)

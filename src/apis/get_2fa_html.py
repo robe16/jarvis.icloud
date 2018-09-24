@@ -1,9 +1,10 @@
 import os
+from datetime import datetime
 from bottle import HTTPResponse, HTTPError
 
+import cache
 from common_functions.request_enable_cors import enable_cors
 from common_functions.request_log_args import get_request_log_args
-from log.log import log_inbound
 from resources.global_resources.log_vars import logPass, logException
 from resources.global_resources.variables import *
 
@@ -11,6 +12,8 @@ from resources.global_resources.variables import *
 def get_2fa_html(request):
     #
     args = get_request_log_args(request)
+    args['timestamp'] = datetime.now()
+    args['process'] = 'inbound'
     #
     try:
         with open(os.path.join(os.path.dirname(__file__), '..', 'service/2fa/2fa.html'), 'r') as f:
@@ -21,7 +24,7 @@ def get_2fa_html(request):
         #
         args['http_response_code'] = status
         args['description'] = '-'
-        log_inbound(**args)
+        cache.logQ.put(args)
         #
         response = HTTPResponse()
         response.status = status
@@ -38,6 +41,6 @@ def get_2fa_html(request):
         args['http_response_code'] = status
         args['description'] = '-'
         args['exception'] = e
-        log_inbound(**args)
+        cache.logQ.put(args)
         #
         raise HTTPError(status)
