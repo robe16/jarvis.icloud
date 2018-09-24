@@ -14,7 +14,7 @@ def eventUpdater_service():
         cache.cache['calendar']['events'] = {}
         #
         ####
-        data = cache.cache['_icloud'].get_birthdays()
+        data = cache.cache['_icloud'].get_events()
         #
         cache.cache['calendar']['events'] = data['events']
         #
